@@ -1,0 +1,81 @@
+
+  <!-- <div class="toolbar-header">
+    <mat-toolbar color="primary">Consulta de Indicadores</mat-toolbar>
+  </div> -->
+
+  <mat-card class="mat-form">
+    <mat-card-header>
+      <mat-card-title>Consulta de Indicadores</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <p>
+        O Banco Mundial mantém uma série de indicadores econômicos disponibilizados na web como arquivos para download e APIs.
+        Um desses dados é o indicador que avalia a quantidade de pessoas em situação de extrema pobreza no mundo, vivendo com até $ 1,90/dia (dólar).
+      </p>
+    </mat-card-content>
+  <form [formGroup]="form">
+  <div class="example-container" >
+    <mat-form-field hintLabel="Max 02 letras">
+      <mat-label>Digite a sigla</mat-label>
+      <input matInput #input maxlength="2" placeholder="Ex: ZH"formControlName="countryId" #countryId>
+      <mat-hint align="end">{{input.value.length}}/2</mat-hint>
+      <mat-error *ngIf="form.get('countryId')?.invalid && form.get('countryId')?.hasError('required')">Este campo é obrigatório.</mat-error>
+    </mat-form-field>
+    <mat-card-actions>
+      <button mat-raised-button color="primary" type="submit" (click)="getIndicatorValue(input.value)">Buscar</button>
+    </mat-card-actions>
+  </div>
+</form>
+</mat-card>
+
+<mat-card class="mat-card-table">
+
+<ng-container *ngIf="(indicators$ | async) as indicators">
+  <div *ngIf="indicators.length > 0; else emptyData">
+    <table mat-table [dataSource]="indicators" class="mat-elevation-z8">
+      <!-- IdIndicator Column -->
+
+      <ng-container matColumnDef="indicatorId">
+        <th mat-header-cell *matHeaderCellDef>Tipo</th>
+        <td mat-cell *matCellDef="let data">{{ data.indicator.id }}</td>
+      </ng-container>
+
+      <ng-container matColumnDef="country">
+        <th mat-header-cell *matHeaderCellDef>País</th>
+        <td mat-cell *matCellDef="let data">{{ data.country.value }}</td>
+      </ng-container>
+
+      <!-- Value Column -->
+      <ng-container matColumnDef="indicator">
+        <th mat-header-cell *matHeaderCellDef>Indicador</th>
+        <td mat-cell *matCellDef="let data">{{ data.indicator.value }}</td>
+      </ng-container>
+
+      <!-- Date Column -->
+      <ng-container matColumnDef="date">
+        <th mat-header-cell *matHeaderCellDef>Ano Referência</th>
+        <td mat-cell *matCellDef="let data">{{ data.date }}</td>
+      </ng-container>
+
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+    </table>
+    <mat-paginator [length]="indicators.length"
+                   [pageSize]="pageSize"
+                   [pageSizeOptions]="[5, 10, 25, 50]"
+                   (page)="onPageChange($event)"
+                   aria-label="Select page">
+    </mat-paginator>
+  </div>
+</ng-container>
+
+<ng-template #emptyData>
+  <p>Nenhum dado encontrado.</p>
+</ng-template>
+
+  <ng-template #loading>
+    <div class="loading-spinner">
+      <mat-spinner></mat-spinner>
+    </div>
+  </ng-template>
+</mat-card>
